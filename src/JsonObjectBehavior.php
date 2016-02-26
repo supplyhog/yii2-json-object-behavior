@@ -125,6 +125,15 @@ class JsonObjectBehavior extends Behavior
 			$this->owner->{$this->attribute} = $this->castObject($value);
 			return;
 		}
+		//Sometimes we can end up with the data already decoded. This is likely in a nested situation
+		if(is_array($this->owner->{$this->attribute})) {
+			if(!$this->array) {
+				$this->owner->{$this->attribute} = $this->castObject($this->owner->{$this->attribute});
+			} else if(is_array($this->owner->{$this->attribute}[0])) {
+				//Same as above, but for the situation where it is an array of objects and we need to check
+				$this->owner->{$this->attribute} = $this->castObject($this->owner->{$this->attribute});
+			}
+		}
 		//If we get here, it is due to some code running a double trigger. Just carry on. All OK.
 	}
 
